@@ -39,7 +39,7 @@ struct Position
     auto operator<=>(const Position&) const = default;
 };
 
-enum class GameState
+enum class GameState : uint8_t
 {
     Ready,
     Playing,
@@ -47,7 +47,7 @@ enum class GameState
     GameOver
 };
 
-enum class GameAction
+enum class GameAction : uint8_t
 {
     MoveLeft,
     MoveRight,

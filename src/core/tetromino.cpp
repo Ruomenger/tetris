@@ -1,5 +1,10 @@
 #include "tetromino.hpp"
 
+#include <array>
+#include <cstddef>
+
+#include "types.hpp"
+
 namespace tetris {
 
 // ── 经典七种方块的初始形状 (R0)，4×4 矩阵 ─────────────
@@ -7,52 +12,52 @@ namespace tetris {
 static constexpr std::array<ShapeMatrix, 7> kInitialShapes = { {
     // I
     { {
-        { { 0, 0, 0, 0 } },
-        { { 1, 1, 1, 1 } },
-        { { 0, 0, 0, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { true, true, true, true } },
+        { { false, false, false, false } },
+        { { false, false, false, false } },
     } },
     // O
     { {
-        { { 0, 0, 0, 0 } },
-        { { 0, 1, 1, 0 } },
-        { { 0, 1, 1, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { false, true, true, false } },
+        { { false, true, true, false } },
+        { { false, false, false, false } },
     } },
     // T
     { {
-        { { 0, 0, 0, 0 } },
-        { { 0, 1, 0, 0 } },
-        { { 1, 1, 1, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { false, true, false, false } },
+        { { true, true, true, false } },
+        { { false, false, false, false } },
     } },
     // S
     { {
-        { { 0, 0, 0, 0 } },
-        { { 0, 1, 1, 0 } },
-        { { 1, 1, 0, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { false, true, true, false } },
+        { { true, true, false, false } },
+        { { false, false, false, false } },
     } },
     // Z
     { {
-        { { 0, 0, 0, 0 } },
-        { { 1, 1, 0, 0 } },
-        { { 0, 1, 1, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { true, true, false, false } },
+        { { false, true, true, false } },
+        { { false, false, false, false } },
     } },
     // J
     { {
-        { { 0, 0, 0, 0 } },
-        { { 1, 0, 0, 0 } },
-        { { 1, 1, 1, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { true, false, false, false } },
+        { { true, true, true, false } },
+        { { false, false, false, false } },
     } },
     // L
     { {
-        { { 0, 0, 0, 0 } },
-        { { 0, 0, 1, 0 } },
-        { { 1, 1, 1, 0 } },
-        { { 0, 0, 0, 0 } },
+        { { false, false, false, false } },
+        { { false, false, true, false } },
+        { { true, true, true, false } },
+        { { false, false, false, false } },
     } },
 } };
 
@@ -66,7 +71,7 @@ consteval auto build_shape_table() -> std::array<ShapeMatrix, 28>
     for (size_t t = 0; t < 7; ++t) {
         auto mat = kInitialShapes[t];
         for (int r = 0; r < 4; ++r) {
-            table[t * 4 + static_cast<size_t>(r)] = mat;
+            table[(t * 4) + static_cast<size_t>(r)] = mat;
             ShapeMatrix next{};
             for (int y = 0; y < 4; ++y) {
                 for (int x = 0; x < 4; ++x) {
@@ -85,17 +90,23 @@ consteval auto build_shape_table() -> std::array<ShapeMatrix, 28>
 
 static constexpr auto kShapeTable = build_shape_table();
 
-static constexpr size_t shape_idx(TetrominoType t, Rotation r) noexcept
+namespace {
+
+constexpr size_t shape_idx(TetrominoType t, Rotation r) noexcept
 {
-    return static_cast<size_t>(t) * 4 + static_cast<size_t>(r);
+    return (static_cast<size_t>(t) * 4) + static_cast<size_t>(r);
 }
 
+}  // anonymous namespace
+
 // ── SRS 墙踢偏移表 ─────────────────────────────────────
+
+namespace {
 
 using Kick5 = std::array<Position, 5>;
 
 // J/L/S/Z/T CW 偏移 (0→1, 1→2, 2→3, 3→0)
-static constexpr std::array<Kick5, 4> kJlsztCW = { {
+constexpr std::array<Kick5, 4> kJlsztCW = { {
     { { { 0, 0 }, { -1, 0 }, { -1, 1 }, { 0, -2 }, { -1, -2 } } },  // 0→1
     { { { 0, 0 }, { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } } },      // 1→2
     { { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, -2 }, { 1, -2 } } },     // 2→3
@@ -103,17 +114,17 @@ static constexpr std::array<Kick5, 4> kJlsztCW = { {
 } };
 
 // I CW 偏移
-static constexpr std::array<Kick5, 4> kICW = { {
+constexpr std::array<Kick5, 4> kICW = { {
     { { { 0, 0 }, { -2, 0 }, { 1, 0 }, { -2, -1 }, { 1, 2 } } },  // 0→1
     { { { 0, 0 }, { -1, 0 }, { 2, 0 }, { -1, 2 }, { 2, -1 } } },  // 1→2
     { { { 0, 0 }, { 2, 0 }, { -1, 0 }, { 2, 1 }, { -1, -2 } } },  // 2→3
     { { { 0, 0 }, { 1, 0 }, { -2, 0 }, { 1, -2 }, { -2, 1 } } },  // 3→0
 } };
 
-static constexpr Kick5 kZero5{ { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
+constexpr Kick5 kZero5{ { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
 
 // 取反
-static constexpr Kick5 negate_kicks(const Kick5& k)
+constexpr Kick5 negate_kicks(const Kick5& k)
 {
     return { { { static_cast<int8_t>(-k[0].row), static_cast<int8_t>(-k[0].col) },
                { static_cast<int8_t>(-k[1].row), static_cast<int8_t>(-k[1].col) },
@@ -123,7 +134,7 @@ static constexpr Kick5 negate_kicks(const Kick5& k)
 }
 
 // CW 表 [type][from_rot] → 5 个偏移 (仅 CW 方向)
-static const auto& cw_kick_table(TetrominoType type) noexcept
+const auto& cw_kick_table(TetrominoType type) noexcept
 {
     if (type == TetrominoType::I)
         return kICW;
@@ -134,9 +145,13 @@ static const auto& cw_kick_table(TetrominoType type) noexcept
     return kJlsztCW;
 }
 
+}  // anonymous namespace
+
 // ── 辅助：从形状矩阵提取占据格 ─────────────────────────
 
-static std::vector<Position> extract_cells(const ShapeMatrix& mat, Position origin) noexcept
+namespace {
+
+std::vector<Position> extract_cells(const ShapeMatrix& mat, Position origin) noexcept
 {
     std::vector<Position> cells;
     cells.reserve(4);
@@ -150,6 +165,8 @@ static std::vector<Position> extract_cells(const ShapeMatrix& mat, Position orig
     }
     return cells;
 }
+
+}  // anonymous namespace
 
 // ── 公共接口 ───────────────────────────────────────────
 
@@ -191,8 +208,8 @@ std::span<const Position> Tetromino::wall_kick_offsets(Rotation from, Rotation t
     if (type_ == TetrominoType::O)
         return { kZero5 };
 
-    int fi = static_cast<int>(from);
-    int ti = static_cast<int>(to);
+    const int fi = static_cast<int>(from);
+    const int ti = static_cast<int>(to);
 
     if (ti == (fi + 1) % 4) {
         // CW
@@ -201,7 +218,7 @@ std::span<const Position> Tetromino::wall_kick_offsets(Rotation from, Rotation t
     if (ti == (fi + 3) % 4) {
         // CCW = 反向 CW 的负偏移
         // 从 to 到 from 是 CW，其偏移取反即从 from 到 to 的 CCW
-        size_t rev = static_cast<size_t>(ti);
+        const auto rev = static_cast<size_t>(ti);
         static const auto& tbl = cw_kick_table(type_);
         // 使用 static 缓存负偏移结果
         // 注意：constexpr 函数在不同调用点可能产生不同值
@@ -231,22 +248,23 @@ std::vector<Position> Tetromino::moved_cells(Direction dir) const noexcept
             dr = 1;
             break;
     }
-    Position new_pos{ static_cast<int8_t>(pos_.row + dr), static_cast<int8_t>(pos_.col + dc) };
+    const Position new_pos{ static_cast<int8_t>(pos_.row + dr),
+                            static_cast<int8_t>(pos_.col + dc) };
     return extract_cells(kShapeTable[shape_idx(type_, rotation_)], new_pos);
 }
 
 std::vector<Position> Tetromino::rotated_cells(bool clockwise) const noexcept
 {
-    int fi = static_cast<int>(rotation_);
-    int ti = clockwise ? (fi + 1) % 4 : (fi + 3) % 4;
-    Rotation new_rot = static_cast<Rotation>(ti);
+    const int fi = static_cast<int>(rotation_);
+    const int ti = clockwise ? (fi + 1) % 4 : (fi + 3) % 4;
+    const auto new_rot = static_cast<Rotation>(ti);
     return extract_cells(kShapeTable[shape_idx(type_, new_rot)], pos_);
 }
 
 std::vector<Position> Tetromino::kicked_cells(Rotation rot, Position kick) const noexcept
 {
-    Position new_pos{ static_cast<int8_t>(pos_.row + kick.row),
-                      static_cast<int8_t>(pos_.col + kick.col) };
+    const Position new_pos{ static_cast<int8_t>(pos_.row + kick.row),
+                            static_cast<int8_t>(pos_.col + kick.col) };
     return extract_cells(kShapeTable[shape_idx(type_, rot)], new_pos);
 }
 

@@ -44,14 +44,14 @@ public:
     void set_piece_sequence(std::vector<TetrominoType> seq) noexcept;
 
 private:
-    void spawn_piece() noexcept;
-    void lock_piece() noexcept;
-    TetrominoType random_type() noexcept;
+    void spawn_piece();
+    void lock_piece();
+    TetrominoType random_type();
     void start_game() noexcept;
 
     bool try_move(Direction dir) noexcept;
     bool try_rotate(bool clockwise) noexcept;
-    void hard_drop() noexcept;
+    void hard_drop();
 
     GameState state_{ GameState::Ready };
     Board board_;

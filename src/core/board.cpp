@@ -12,7 +12,7 @@ bool Board::is_occupied(Position pos) const noexcept
     return grid_[static_cast<size_t>(pos.row)][static_cast<size_t>(pos.col)].has_value();
 }
 
-bool Board::is_in_bounds(Position pos) const noexcept
+bool Board::is_in_bounds(Position pos) noexcept
 {
     return pos.col >= 0 && pos.col < kBoardWidth && pos.row >= 0 && pos.row < kBoardTotalHeight;
 }
@@ -41,8 +41,8 @@ std::expected<uint8_t, BoardError> Board::clear_lines()
 {
     uint8_t cleared = 0;
     for (int8_t row = kBoardTotalHeight - 1; row >= 0; --row) {
-        bool full = std::ranges::all_of(grid_[static_cast<size_t>(row)],
-                                        [](const auto& cell) { return cell.has_value(); });
+        const bool full = std::ranges::all_of(grid_[static_cast<size_t>(row)],
+                                              [](const auto& cell) { return cell.has_value(); });
 
         if (full) {
             // 向下移动所有上面的行

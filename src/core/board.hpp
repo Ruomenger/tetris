@@ -15,7 +15,7 @@ public:
     Board() = default;
 
     [[nodiscard]] bool is_occupied(Position pos) const noexcept;
-    [[nodiscard]] bool is_in_bounds(Position pos) const noexcept;
+    [[nodiscard]] static bool is_in_bounds(Position pos) noexcept;
     [[nodiscard]] std::optional<TetrominoType> cell_at(Position pos) const noexcept;
 
     [[nodiscard]] bool can_place(std::span<const Position> cells) const noexcept;

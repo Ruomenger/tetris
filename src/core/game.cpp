@@ -5,7 +5,7 @@
 
 namespace tetris {
 
-Game::Game() : state_(GameState::Ready) {}
+Game::Game() = default;
 
 // ── 公开接口 ────────────────────────────────────────────
 
@@ -108,7 +108,7 @@ std::vector<Position> Game::ghost_position() const noexcept
 
 std::chrono::milliseconds Game::drop_interval() const noexcept
 {
-    const int32_t ms = std::max(50, 800 - (static_cast<int32_t>(scoring_.level()) - 1) * 60);
+    const int32_t ms = std::max(50, 800 - ((static_cast<int32_t>(scoring_.level()) - 1) * 60));
     return std::chrono::milliseconds(ms);
 }
 
@@ -136,7 +136,7 @@ void Game::start_game() noexcept
     spawn_piece();
 }
 
-void Game::spawn_piece() noexcept
+void Game::spawn_piece()
 {
     if (!next_type_.has_value()) {
         next_type_ = random_type();
@@ -146,13 +146,13 @@ void Game::spawn_piece() noexcept
 
     // 新方块出生位置：缓冲区顶部，水平居中
     // 检测 GameOver：新方块无法放置
-    if (!board_.can_place(current_piece_->cells())) {
+    if (current_piece_.has_value() && !board_.can_place(current_piece_->cells())) {
         current_piece_.reset();
         state_ = GameState::GameOver;
     }
 }
 
-void Game::lock_piece() noexcept
+void Game::lock_piece()
 {
     if (!current_piece_.has_value())
         return;
@@ -169,7 +169,7 @@ void Game::lock_piece() noexcept
     spawn_piece();
 }
 
-TetrominoType Game::random_type() noexcept
+TetrominoType Game::random_type()
 {
     if (fixed_sequence_.has_value() && !fixed_sequence_->empty()) {
         auto t = (*fixed_sequence_)[sequence_index_ % fixed_sequence_->size()];
@@ -206,13 +206,14 @@ bool Game::try_move(Direction dir) noexcept
 
 bool Game::try_rotate(bool clockwise) noexcept
 {
-    if (!current_piece_.has_value())
+    if (!current_piece_.has_value()) {
         return false;
+    }
 
     auto& piece = *current_piece_;
-    int fi = static_cast<int>(piece.rotation());
-    int ti = clockwise ? (fi + 1) % 4 : (fi + 3) % 4;
-    Rotation new_rot = static_cast<Rotation>(ti);
+    const int fi = static_cast<int>(piece.rotation());
+    const int ti = clockwise ? (fi + 1) % 4 : (fi + 3) % 4;
+    const auto new_rot = static_cast<Rotation>(ti);
 
     auto kicks = piece.wall_kick_offsets(piece.rotation(), new_rot);
 
@@ -234,7 +235,7 @@ bool Game::try_rotate(bool clockwise) noexcept
     return false;
 }
 
-void Game::hard_drop() noexcept
+void Game::hard_drop()
 {
     if (!current_piece_.has_value())
         return;

@@ -3,33 +3,48 @@ Checks: >
   -*,
   bugprone-*,
   -bugprone-easily-swappable-parameters,
+  -bugprone-signed-char-misuse,
   cert-*,
   -cert-err58-cpp,
+  -cert-str34-c,
   clang-analyzer-*,
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-avoid-c-arrays,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-pro-type-vararg,
   -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-use-default-member-init,
   google-*,
   -google-readability-todo,
   -google-runtime-references,
+  -google-readability-braces-around-statements,
   hicpp-*,
   -hicpp-avoid-c-arrays,
   -hicpp-no-array-decay,
   -hicpp-vararg,
+  -hicpp-braces-around-statements,
   misc-*,
   -misc-non-private-member-variables-in-classes,
+  -misc-include-cleaner,
   modernize-*,
   -modernize-use-trailing-return-type,
+  -modernize-use-designated-initializers,
+  -modernize-avoid-c-arrays,
+  -modernize-return-braced-init-list,
+  -modernize-use-default-member-init,
   performance-*,
   portability-*,
+  -portability-avoid-pragma-once,
   readability-*,
   -readability-identifier-length,
+  -readability-identifier-naming,
   -readability-magic-numbers,
   -readability-function-cognitive-complexity,
-  -readability-redundant-access-specifiers
+  -readability-redundant-access-specifiers,
+  -readability-braces-around-statements,
+  -readability-math-missing-parentheses
 
 CheckOptions:
   - key: readability-identifier-naming.ClassCase
@@ -49,11 +64,17 @@ CheckOptions:
   - key: readability-identifier-naming.VariableCase
     value: lower_case
   - key: readability-identifier-naming.ConstantCase
-    value: CamelCase
+    value: aNy_CasE
+  - key: readability-identifier-naming.ConstantPrefix
+    value: k
   - key: readability-identifier-naming.GlobalConstantCase
     value: CamelCase
+  - key: readability-identifier-naming.GlobalConstantPrefix
+    value: k
   - key: readability-identifier-naming.StaticConstantCase
     value: CamelCase
+  - key: readability-identifier-naming.StaticConstantPrefix
+    value: k
   - key: readability-identifier-naming.EnumConstantCase
     value: CamelCase
   - key: misc-include-cleaner.IgnoreHeaders

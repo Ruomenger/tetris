@@ -1,10 +1,12 @@
 #include "scoring.hpp"
 
+#include <array>
+
 namespace tetris {
 
 void Scoring::add_line_clear(uint8_t count, uint32_t level) noexcept
 {
-    constexpr uint32_t kScores[] = { 0, 100, 300, 500, 800 };
+    constexpr std::array<uint32_t, 5> kScores = { 0, 100, 300, 500, 800 };
     if (count > 0 && count <= 4) {
         score_ += kScores[count] * level;
         total_lines_ += count;

@@ -14,7 +14,7 @@ using ShapeSpan = std::span<const std::array<bool, 4>, 4>;
 class Tetromino
 {
 public:
-    Tetromino(TetrominoType type) noexcept;
+    explicit Tetromino(TetrominoType type) noexcept;
 
     [[nodiscard]] constexpr TetrominoType type() const noexcept { return type_; }
     [[nodiscard]] constexpr Rotation rotation() const noexcept { return rotation_; }

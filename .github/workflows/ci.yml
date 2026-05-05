@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
+  CTEST_PARALLEL_LEVEL: 4
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+jobs:
+  # ── 格式化检查 ──────────────────────────────────
+  format:
+    name: "Format Check"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+      - name: Check formatting
+        run: bash scripts/format.sh --check
+
+  # ── Clang-Tidy 静态分析 ─────────────────────────
+  tidy:
+    name: "Clang-Tidy"
+    runs-on: ubuntu-24.04
+    needs: [format]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build clang-tidy \
+            qt6-base-dev libgtest-dev
+      - name: Configure
+        run: cmake --preset ci-debug
+      - name: Run Clang-Tidy
+        run: bash scripts/tidy.sh
+
+  # ── 构建 & 测试 (Debug) ─────────────────────────
+  build-and-test:
+    name: "Build & Test (${{ matrix.os }}, ${{ matrix.preset }})"
+    runs-on: ${{ matrix.os }}
+    needs: [format]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            preset: ci-debug
+            packages: cmake ninja-build qt6-base-dev libgtest-dev lcov
+          - os: ubuntu-24.04-arm
+            preset: ci-debug
+            packages: cmake ninja-build qt6-base-dev libgtest-dev lcov
+          - os: macos-14
+            preset: ci-debug
+            packages: cmake ninja qt googletest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.packages }}
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: brew install ${{ matrix.packages }}
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+
+  # ── Sanitizer 测试 (ASan + UBSan) ──────────────
+  sanitizer:
+    name: "Sanitizer (ASan+UBSan)"
+    runs-on: ubuntu-24.04
+    needs: [format]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build qt6-base-dev libgtest-dev
+      - name: Configure (ASan)
+        run: cmake --preset ci-asan
+      - name: Build
+        run: cmake --build --preset ci-asan
+      - name: Test with Sanitizers
+        run: ctest --preset ci-asan
+
+  # ── 覆盖率 ──────────────────────────────────────
+  coverage:
+    name: "Coverage Report"
+    runs-on: ubuntu-24.04
+    needs: [build-and-test, sanitizer]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build qt6-base-dev libgtest-dev lcov
+      - name: Configure (Coverage)
+        run: cmake --preset ci-coverage
+      - name: Build
+        run: cmake --build --preset ci-coverage
+      - name: Test
+        run: ctest --preset ci-coverage
+      - name: Generate coverage report
+        run: |
+          lcov --capture --directory build/ci-coverage \
+               --output-file coverage.info \
+               --ignore-errors mismatch,inconsistent,gcov
+          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/_deps/*' \
+               --output-file coverage_filtered.info \
+               --ignore-errors unused
+          lcov --list coverage_filtered.info
+      - name: Upload coverage to Codecov (optional)
+        if: github.event_name == 'push'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage_filtered.info
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # ── 汇总 ────────────────────────────────────────
+  summary:
+    name: "CI Summary"
+    runs-on: ubuntu-24.04
+    needs: [format, tidy, build-and-test, sanitizer, coverage]
+    if: always()
+    steps:
+      - name: Check all jobs
+        run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          results="${{ needs.format.result }} ${{ needs.tidy.result }} ${{ needs.build-and-test.result }} ${{ needs.sanitizer.result }} ${{ needs.coverage.result }}"
+          echo "| Job | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Format | ${{ needs.format.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tidy | ${{ needs.tidy.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build & Test | ${{ needs.build-and-test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Sanitizer | ${{ needs.sanitizer.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage | ${{ needs.coverage.result }} |" >> $GITHUB_STEP_SUMMARY
+          if echo "$results" | grep -q 'failure\|cancelled'; then
+            echo "❌ Some jobs failed." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ All jobs passed." >> $GITHUB_STEP_SUMMARY
+          fi

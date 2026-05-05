@@ -1,0 +1,153 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 25,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "environment": {
+                "CC": "gcc",
+                "CXX": "g++"
+            },
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CXX_STANDARD": "23",
+                "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+                "CMAKE_CXX_EXTENSIONS": "OFF",
+                "CMAKE_POSITION_INDEPENDENT_CODE": "ON"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g",
+                "ENABLE_SANITIZERS": "OFF",
+                "BUILD_TESTS": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "ENABLE_SANITIZERS": "OFF",
+                "BUILD_TESTS": "ON"
+            }
+        },
+        {
+            "name": "asan",
+            "displayName": "AddressSanitizer",
+            "inherits": "debug",
+            "cacheVariables": {
+                "ENABLE_SANITIZERS": "ON",
+                "SANITIZER_TYPE": "address",
+                "CMAKE_CXX_FLAGS": "-fsanitize=address -fno-omit-frame-pointer"
+            }
+        },
+        {
+            "name": "ci-debug",
+            "displayName": "CI Debug",
+            "inherits": "debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_SANITIZERS": "OFF",
+                "BUILD_TESTS": "ON"
+            }
+        },
+        {
+            "name": "ci-asan",
+            "displayName": "CI ASan",
+            "inherits": "debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_SANITIZERS": "ON",
+                "SANITIZER_TYPE": "address",
+                "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer"
+            }
+        },
+        {
+            "name": "ci-coverage",
+            "displayName": "CI Coverage",
+            "inherits": "debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_COVERAGE": "ON",
+                "ENABLE_SANITIZERS": "OFF",
+                "BUILD_TESTS": "ON",
+                "CMAKE_CXX_FLAGS": "--coverage -O0 -g"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "asan",
+            "configurePreset": "asan"
+        },
+        {
+            "name": "ci-debug",
+            "configurePreset": "ci-debug"
+        },
+        {
+            "name": "ci-asan",
+            "configurePreset": "ci-asan"
+        },
+        {
+            "name": "ci-coverage",
+            "configurePreset": "ci-coverage"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "asan",
+            "configurePreset": "asan",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "ci-debug",
+            "configurePreset": "ci-debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "ci-asan",
+            "configurePreset": "ci-asan",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "ci-coverage",
+            "configurePreset": "ci-coverage",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ]
+}

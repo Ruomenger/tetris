@@ -1,0 +1,58 @@
+# Build
+build/
+out/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+
+# IDE
+.vscode/ipch/
+.vscode/*.db
+*.code-workspace
+.idea/
+*.iml
+*.pro.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+!CMakePresets.json
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
+coverage/
+*.lcov
+*.info
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# Qt
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Misc
+*.swp
+*.swo
+*~
+\#*\#
+/core
+/core.*
+*.log
+!src/core/

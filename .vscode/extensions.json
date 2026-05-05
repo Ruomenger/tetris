@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "ms-vscode.cmake-tools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "twxs.cmake",
+        "ms-vscode.cpptools-extension-pack",
+        "theqtcompany.qt-official",
+        "cheshirekow.cmake-format",
+        "github.vscode-github-actions",
+        "ms-vscode.cpptools"
+    ],
+    "unwantedRecommendations": [
+        "ms-vscode.cpptools-extension-pack"
+    ]
+}

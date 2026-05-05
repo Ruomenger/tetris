@@ -1,0 +1,48 @@
+{
+    "clangd.path": "clangd",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build/debug",
+        "--header-insertion=never",
+        "--background-index",
+        "--clang-tidy",
+        "--all-scopes-completion",
+        "--completion-style=detailed"
+    ],
+    "cmake.configureOnOpen": true,
+    "cmake.configureSettings": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTS": "ON"
+    },
+    "cmake.buildDirectory": "${workspaceFolder}/build/debug",
+    "cmake.generator": "Unix Makefiles",
+    "cmake.configureArgs": [
+        "--preset",
+        "debug"
+    ],
+    "editor.formatOnSave": false,
+    "files.associations": {
+        "*.hpp": "cpp",
+        "*.cpp": "cpp",
+        "*.h": "cpp",
+        "array": "cpp",
+        "optional": "cpp",
+        "span": "cpp",
+        "expected": "cpp",
+        "ranges": "cpp",
+        "format": "cpp",
+        "chrono": "cpp",
+        "random": "cpp",
+        "concepts": "cpp"
+    },
+    "C_Cpp.default.cppStandard": "c++23",
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "files.exclude": {
+        "build/": true
+    },
+    "search.exclude": {
+        "build/": true
+    }
+}

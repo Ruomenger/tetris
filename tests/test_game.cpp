@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <tuple>
+
 #include "game.hpp"
 
 using namespace tetris;
@@ -56,7 +58,7 @@ TEST_F(GameTest, PauseFromPlaying)
 TEST_F(GameTest, ResumeFromPaused)
 {
     restart_and_play();
-    game_.process(GameAction::Pause);
+    std::ignore = game_.process(GameAction::Pause);
     auto result = game_.process(GameAction::Resume);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(game_.state(), GameState::Playing);
@@ -99,7 +101,7 @@ TEST_F(GameTest, MoveLeftBlockedByWall)
     game_.set_piece_sequence({ TetrominoType::I });
     restart_and_play();
     for (int i = 0; i < 3; ++i)
-        game_.process(GameAction::MoveLeft);
+        std::ignore = game_.process(GameAction::MoveLeft);
     EXPECT_EQ(game_.current_piece()->position().col, 0);
     auto result = game_.process(GameAction::MoveLeft);
     EXPECT_FALSE(result.has_value());
@@ -141,7 +143,7 @@ TEST_F(GameTest, RotateFullCircle)
     restart_and_play();
     auto init_rot = game_.current_piece()->rotation();
     for (int i = 0; i < 4; ++i)
-        game_.process(GameAction::RotateCW);
+        std::ignore = game_.process(GameAction::RotateCW);
     EXPECT_EQ(game_.current_piece()->rotation(), init_rot);
 }
 
@@ -150,7 +152,7 @@ TEST_F(GameTest, IRotatesAtWallWithKick)
     game_.set_piece_sequence({ TetrominoType::I });
     restart_and_play();
     for (int i = 0; i < 3; ++i)
-        game_.process(GameAction::MoveLeft);
+        std::ignore = game_.process(GameAction::MoveLeft);
     EXPECT_EQ(game_.current_piece()->position().col, 0);
     auto result = game_.process(GameAction::RotateCW);
     EXPECT_TRUE(result.has_value());
@@ -190,8 +192,8 @@ TEST_F(GameTest, TickDoesNothingWhenPaused)
 {
     restart_and_play();
     auto initial_row = game_.current_piece()->position().row;
-    game_.process(GameAction::Pause);
-    game_.tick();
+    std::ignore = game_.process(GameAction::Pause);
+    std::ignore = game_.tick();
     EXPECT_EQ(game_.current_piece()->position().row, initial_row);
 }
 
@@ -202,7 +204,7 @@ TEST_F(GameTest, GameOverOnBlockedSpawn)
     game_.set_piece_sequence(std::vector<TetrominoType>(40, TetrominoType::O));
     restart_and_play();
     while (game_.state() == GameState::Playing) {
-        game_.process(GameAction::HardDrop);
+        std::ignore = game_.process(GameAction::HardDrop);
     }
     EXPECT_EQ(game_.state(), GameState::GameOver);
 }
@@ -237,11 +239,11 @@ TEST_F(GameTest, GhostBelowOrAtCurrent)
 TEST_F(GameTest, RestartResetsEverything)
 {
     restart_and_play();
-    game_.process(GameAction::HardDrop);
+    std::ignore = game_.process(GameAction::HardDrop);
     if (game_.state() == GameState::Playing)
-        game_.process(GameAction::HardDrop);
+        std::ignore = game_.process(GameAction::HardDrop);
 
-    game_.process(GameAction::Restart);
+    std::ignore = game_.process(GameAction::Restart);
     EXPECT_EQ(game_.state(), GameState::Playing);
     EXPECT_EQ(game_.score(), 0);
     EXPECT_EQ(game_.level(), 1);

@@ -38,10 +38,19 @@ public:
 
     [[nodiscard]] std::chrono::milliseconds drop_interval() const noexcept;
 
+    // 公开 for testing
+    void set_rng_seed(uint32_t seed) noexcept;
+    void set_piece_sequence(std::vector<TetrominoType> seq) noexcept;
+
 private:
     void spawn_piece() noexcept;
     void lock_piece() noexcept;
     TetrominoType random_type() noexcept;
+    void start_game() noexcept;
+
+    bool try_move(Direction dir) noexcept;
+    bool try_rotate(bool clockwise) noexcept;
+    void hard_drop() noexcept;
 
     GameState state_{GameState::Ready};
     Board board_;
@@ -49,6 +58,10 @@ private:
     std::optional<Tetromino> current_piece_;
     std::optional<TetrominoType> next_type_;
     std::mt19937 rng_{std::random_device{}()};
+
+    // 测试用：固定出块序列
+    std::optional<std::vector<TetrominoType>> fixed_sequence_;
+    size_t sequence_index_{0};
 };
 
 }  // namespace tetris

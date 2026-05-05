@@ -56,7 +56,8 @@ TEST_F(BoardTest, CannotPlaceOnOccupied) {
 TEST_F(BoardTest, ClearSingleLine) {
     // fill the bottom row
     for (int8_t col = 0; col < kBoardWidth; ++col) {
-        board.lock({{kBoardTotalHeight - 1, col}}, TetrominoType::I);
+        std::vector<Position> cells = {{kBoardTotalHeight - 1, col}};
+        board.lock(cells, TetrominoType::I);
     }
     auto result = board.clear_lines();
     EXPECT_TRUE(result.has_value());
@@ -72,8 +73,9 @@ TEST_F(BoardTest, ClearMultipleLines) {
     // fill bottom 2 rows
     for (int8_t row_offset = 0; row_offset < 2; ++row_offset) {
         for (int8_t col = 0; col < kBoardWidth; ++col) {
-            board.lock({{kBoardTotalHeight - 1 - row_offset, col}},
-                       TetrominoType::I);
+            std::vector<Position> cells = {
+                {static_cast<int8_t>(kBoardTotalHeight - 1 - row_offset), col}};
+            board.lock(cells, TetrominoType::I);
         }
     }
     auto result = board.clear_lines();

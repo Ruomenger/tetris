@@ -4,12 +4,14 @@
 
 using namespace tetris;
 
-class TetrominoTest : public ::testing::Test {
+class TetrominoTest : public ::testing::Test
+{
 protected:
     void SetUp() override {}
 };
 
-TEST_F(TetrominoTest, CreateITetromino) {
+TEST_F(TetrominoTest, CreateITetromino)
+{
     Tetromino t(TetrominoType::I);
     EXPECT_EQ(t.type(), TetrominoType::I);
     EXPECT_EQ(t.rotation(), Rotation::R0);
@@ -19,10 +21,10 @@ TEST_F(TetrominoTest, CreateITetromino) {
     EXPECT_EQ(t.cells().size(), 4);
 }
 
-TEST_F(TetrominoTest, CreateAllTypes) {
-    for (auto type : {TetrominoType::I, TetrominoType::O, TetrominoType::T,
-                      TetrominoType::S, TetrominoType::Z, TetrominoType::J,
-                      TetrominoType::L}) {
+TEST_F(TetrominoTest, CreateAllTypes)
+{
+    for (auto type : { TetrominoType::I, TetrominoType::O, TetrominoType::T, TetrominoType::S,
+                       TetrominoType::Z, TetrominoType::J, TetrominoType::L }) {
         Tetromino t(type);
         EXPECT_EQ(t.type(), type);
         EXPECT_EQ(t.rotation(), Rotation::R0);
@@ -30,7 +32,8 @@ TEST_F(TetrominoTest, CreateAllTypes) {
     }
 }
 
-TEST_F(TetrominoTest, RotateClockwise) {
+TEST_F(TetrominoTest, RotateClockwise)
+{
     Tetromino t(TetrominoType::T);
     auto cells_before = std::vector<Position>(t.cells().begin(), t.cells().end());
 
@@ -41,7 +44,8 @@ TEST_F(TetrominoTest, RotateClockwise) {
     EXPECT_NE(cells_before, cells_after);
 }
 
-TEST_F(TetrominoTest, RotateFullCircleCW) {
+TEST_F(TetrominoTest, RotateFullCircleCW)
+{
     Tetromino t(TetrominoType::T);
     auto cells_before = std::vector<Position>(t.cells().begin(), t.cells().end());
 
@@ -55,7 +59,8 @@ TEST_F(TetrominoTest, RotateFullCircleCW) {
     EXPECT_EQ(cells_before, cells_after);
 }
 
-TEST_F(TetrominoTest, RotateFullCircleCCW) {
+TEST_F(TetrominoTest, RotateFullCircleCCW)
+{
     Tetromino t(TetrominoType::T);
     auto cells_before = std::vector<Position>(t.cells().begin(), t.cells().end());
 
@@ -69,40 +74,46 @@ TEST_F(TetrominoTest, RotateFullCircleCCW) {
     EXPECT_EQ(cells_before, cells_after);
 }
 
-TEST_F(TetrominoTest, SetPosition) {
+TEST_F(TetrominoTest, SetPosition)
+{
     Tetromino t(TetrominoType::I);
-    t.set_position({5, 2});
+    t.set_position({ 5, 2 });
     EXPECT_EQ(t.position().row, 5);
     EXPECT_EQ(t.position().col, 2);
     EXPECT_EQ(t.cells().size(), 4);
 }
 
-TEST_F(TetrominoTest, MovedCells) {
+TEST_F(TetrominoTest, MovedCells)
+{
     Tetromino t(TetrominoType::I);
-    t.set_position({10, 3});
+    t.set_position({ 10, 3 });
 
     auto moved = t.moved_cells(Direction::Left);
     EXPECT_EQ(moved.size(), 4);
     // I piece at R0 occupies cols 0-3 in shape → pos {10,3} → cols {3,4,5,6}
     // after move left: cols {2,3,4,5}
     int min_col = 100;
-    for (auto& p : moved) min_col = std::min(min_col, static_cast<int>(p.col));
+    for (auto& p : moved)
+        min_col = std::min(min_col, static_cast<int>(p.col));
     EXPECT_EQ(min_col, 2);
 
     auto down = t.moved_cells(Direction::Down);
     int min_row = 100;
-    for (auto& p : down) min_row = std::min(min_row, static_cast<int>(p.row));
+    for (auto& p : down)
+        min_row = std::min(min_row, static_cast<int>(p.row));
     EXPECT_EQ(min_row, 12);  // I at {10,3}: cells at row 11; down → row 12
 
     auto right = t.moved_cells(Direction::Right);
     int max_col = 0;
-    for (auto& p : right) max_col = std::max(max_col, static_cast<int>(p.col));
+    for (auto& p : right)
+        max_col = std::max(max_col, static_cast<int>(p.col));
     EXPECT_EQ(max_col, 7);  // I at {10,3}: cells at cols 3-6; right → cols 4-7
 }
 
-TEST_F(TetrominoTest, RotatedCells) {
+TEST_F(TetrominoTest, RotatedCells)
+{
     Tetromino t(TetrominoType::I);
-    t.set_position({10, 3});
+    t.set_position({ 10, 3 });
 
     auto cw = t.rotated_cells(true);
     EXPECT_EQ(cw.size(), 4);
@@ -112,7 +123,7 @@ TEST_F(TetrominoTest, RotatedCells) {
 
     // I 在 R0 和 R180 的 cells 应该相同（水平→垂直→水平）
     Tetromino t2(TetrominoType::I);
-    t2.set_position({10, 3});
+    t2.set_position({ 10, 3 });
     auto r0_cells = std::vector<Position>(t2.cells().begin(), t2.cells().end());
     t2.rotate_clockwise();
     t2.rotate_clockwise();
@@ -121,7 +132,8 @@ TEST_F(TetrominoTest, RotatedCells) {
     // R0 是水平, R180 也是水平，但相对于原点位置略有不同
 }
 
-TEST_F(TetrominoTest, WallKickOffsetsHaveFiveTests) {
+TEST_F(TetrominoTest, WallKickOffsetsHaveFiveTests)
+{
     Tetromino t(TetrominoType::T);
     auto kicks = t.wall_kick_offsets(Rotation::R0, Rotation::R90);
     EXPECT_EQ(kicks.size(), 5);
@@ -129,7 +141,8 @@ TEST_F(TetrominoTest, WallKickOffsetsHaveFiveTests) {
     EXPECT_EQ(kicks[0].col, 0);
 }
 
-TEST_F(TetrominoTest, IWallKickDiffersFromJLSZT) {
+TEST_F(TetrominoTest, IWallKickDiffersFromJLSZT)
+{
     Tetromino i(TetrominoType::I);
     Tetromino t(TetrominoType::T);
 
@@ -139,8 +152,7 @@ TEST_F(TetrominoTest, IWallKickDiffersFromJLSZT) {
     // I 的第二个测试偏移与 JLSZT 不同
     bool any_diff = false;
     for (size_t idx = 0; idx < 5; ++idx) {
-        if (i_kicks[idx].row != t_kicks[idx].row ||
-            i_kicks[idx].col != t_kicks[idx].col) {
+        if (i_kicks[idx].row != t_kicks[idx].row || i_kicks[idx].col != t_kicks[idx].col) {
             any_diff = true;
             break;
         }
@@ -148,10 +160,11 @@ TEST_F(TetrominoTest, IWallKickDiffersFromJLSZT) {
     EXPECT_TRUE(any_diff);
 }
 
-TEST_F(TetrominoTest, OWallKicksAllZero) {
+TEST_F(TetrominoTest, OWallKicksAllZero)
+{
     Tetromino o(TetrominoType::O);
-    for (auto from : {Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270}) {
-        for (auto to : {Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270}) {
+    for (auto from : { Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270 }) {
+        for (auto to : { Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270 }) {
             auto kicks = o.wall_kick_offsets(from, to);
             for (auto& k : kicks) {
                 EXPECT_EQ(k.row, 0);
@@ -161,8 +174,9 @@ TEST_F(TetrominoTest, OWallKicksAllZero) {
     }
 }
 
-TEST_F(TetrominoTest, StaticCellsFor) {
-    auto cells = Tetromino::cells_for(TetrominoType::O, Rotation::R0, {5, 5});
+TEST_F(TetrominoTest, StaticCellsFor)
+{
+    auto cells = Tetromino::cells_for(TetrominoType::O, Rotation::R0, { 5, 5 });
     EXPECT_EQ(cells.size(), 4);
     // O 方块在 R0: 占据 (1,1), (1,2), (2,1), (2,2) 相对
     // 所以绝对位置: (6,6), (6,7), (7,6), (7,7)

@@ -9,7 +9,8 @@ Game::Game() : state_(GameState::Ready) {}
 
 // ── 公开接口 ────────────────────────────────────────────
 
-std::expected<void, GameError> Game::process(GameAction action) {
+std::expected<void, GameError> Game::process(GameAction action)
+{
     // 全局操作：任何时候都可以
     if (action == GameAction::Restart) {
         start_game();
@@ -36,50 +37,60 @@ std::expected<void, GameError> Game::process(GameAction action) {
     }
 
     switch (action) {
-    case GameAction::MoveLeft:
-        if (!try_move(Direction::Left)) return std::unexpected(GameError::MoveBlocked);
-        break;
-    case GameAction::MoveRight:
-        if (!try_move(Direction::Right)) return std::unexpected(GameError::MoveBlocked);
-        break;
-    case GameAction::SoftDrop:
-        if (try_move(Direction::Down)) {
-            scoring_.add_soft_drop(1);
-        } else {
-            return std::unexpected(GameError::MoveBlocked);
-        }
-        break;
-    case GameAction::HardDrop:
-        hard_drop();
-        break;
-    case GameAction::RotateCW:
-        if (!try_rotate(true)) return std::unexpected(GameError::MoveBlocked);
-        break;
-    case GameAction::RotateCCW:
-        if (!try_rotate(false)) return std::unexpected(GameError::MoveBlocked);
-        break;
-    default:
-        break;
+        case GameAction::MoveLeft:
+            if (!try_move(Direction::Left))
+                return std::unexpected(GameError::MoveBlocked);
+            break;
+        case GameAction::MoveRight:
+            if (!try_move(Direction::Right))
+                return std::unexpected(GameError::MoveBlocked);
+            break;
+        case GameAction::SoftDrop:
+            if (try_move(Direction::Down)) {
+                scoring_.add_soft_drop(1);
+            } else {
+                return std::unexpected(GameError::MoveBlocked);
+            }
+            break;
+        case GameAction::HardDrop:
+            hard_drop();
+            break;
+        case GameAction::RotateCW:
+            if (!try_rotate(true))
+                return std::unexpected(GameError::MoveBlocked);
+            break;
+        case GameAction::RotateCCW:
+            if (!try_rotate(false))
+                return std::unexpected(GameError::MoveBlocked);
+            break;
+        default:
+            break;
     }
 
     return {};
 }
 
-std::expected<void, GameError> Game::tick() {
-    if (state_ != GameState::Playing) return {};
+std::expected<void, GameError> Game::tick()
+{
+    if (state_ != GameState::Playing)
+        return {};
 
-    if (!current_piece_.has_value()) return {};
+    if (!current_piece_.has_value())
+        return {};
 
     // 尝试下落一行
-    if (try_move(Direction::Down)) return {};
+    if (try_move(Direction::Down))
+        return {};
 
     // 无法下落 → 锁定
     lock_piece();
     return {};
 }
 
-std::vector<Position> Game::ghost_position() const noexcept {
-    if (!current_piece_.has_value()) return {};
+std::vector<Position> Game::ghost_position() const noexcept
+{
+    if (!current_piece_.has_value())
+        return {};
 
     // 从当前位置一直向下移动直到碰撞
     Tetromino ghost(*current_piece_);
@@ -87,7 +98,7 @@ std::vector<Position> Game::ghost_position() const noexcept {
         auto next = ghost.moved_cells(Direction::Down);
         if (board_.can_place(next)) {
             ghost.set_position(
-                {static_cast<int8_t>(ghost.position().row + 1), ghost.position().col});
+                { static_cast<int8_t>(ghost.position().row + 1), ghost.position().col });
         } else {
             break;
         }
@@ -95,23 +106,27 @@ std::vector<Position> Game::ghost_position() const noexcept {
     return std::vector<Position>(ghost.cells().begin(), ghost.cells().end());
 }
 
-std::chrono::milliseconds Game::drop_interval() const noexcept {
+std::chrono::milliseconds Game::drop_interval() const noexcept
+{
     const int32_t ms = std::max(50, 800 - (static_cast<int32_t>(scoring_.level()) - 1) * 60);
     return std::chrono::milliseconds(ms);
 }
 
-void Game::set_rng_seed(uint32_t seed) noexcept {
+void Game::set_rng_seed(uint32_t seed) noexcept
+{
     rng_.seed(seed);
 }
 
-void Game::set_piece_sequence(std::vector<TetrominoType> seq) noexcept {
+void Game::set_piece_sequence(std::vector<TetrominoType> seq) noexcept
+{
     fixed_sequence_ = std::move(seq);
     sequence_index_ = 0;
 }
 
 // ── 私有方法 ────────────────────────────────────────────
 
-void Game::start_game() noexcept {
+void Game::start_game() noexcept
+{
     board_.reset();
     scoring_.reset();
     current_piece_.reset();
@@ -121,7 +136,8 @@ void Game::start_game() noexcept {
     spawn_piece();
 }
 
-void Game::spawn_piece() noexcept {
+void Game::spawn_piece() noexcept
+{
     if (!next_type_.has_value()) {
         next_type_ = random_type();
     }
@@ -136,8 +152,10 @@ void Game::spawn_piece() noexcept {
     }
 }
 
-void Game::lock_piece() noexcept {
-    if (!current_piece_.has_value()) return;
+void Game::lock_piece() noexcept
+{
+    if (!current_piece_.has_value())
+        return;
 
     const auto& piece = *current_piece_;
     board_.lock(piece.cells(), piece.type());
@@ -151,7 +169,8 @@ void Game::lock_piece() noexcept {
     spawn_piece();
 }
 
-TetrominoType Game::random_type() noexcept {
+TetrominoType Game::random_type() noexcept
+{
     if (fixed_sequence_.has_value() && !fixed_sequence_->empty()) {
         auto t = (*fixed_sequence_)[sequence_index_ % fixed_sequence_->size()];
         sequence_index_ = (sequence_index_ + 1) % fixed_sequence_->size();
@@ -161,15 +180,23 @@ TetrominoType Game::random_type() noexcept {
     return static_cast<TetrominoType>(dist(rng_));
 }
 
-bool Game::try_move(Direction dir) noexcept {
-    if (!current_piece_.has_value()) return false;
+bool Game::try_move(Direction dir) noexcept
+{
+    if (!current_piece_.has_value())
+        return false;
     auto new_cells = current_piece_->moved_cells(dir);
     if (board_.can_place(new_cells)) {
         auto pos = current_piece_->position();
         switch (dir) {
-        case Direction::Left:  pos.col = static_cast<int8_t>(pos.col - 1); break;
-        case Direction::Right: pos.col = static_cast<int8_t>(pos.col + 1); break;
-        case Direction::Down:  pos.row = static_cast<int8_t>(pos.row + 1); break;
+            case Direction::Left:
+                pos.col = static_cast<int8_t>(pos.col - 1);
+                break;
+            case Direction::Right:
+                pos.col = static_cast<int8_t>(pos.col + 1);
+                break;
+            case Direction::Down:
+                pos.row = static_cast<int8_t>(pos.row + 1);
+                break;
         }
         current_piece_->set_position(pos);
         return true;
@@ -177,8 +204,10 @@ bool Game::try_move(Direction dir) noexcept {
     return false;
 }
 
-bool Game::try_rotate(bool clockwise) noexcept {
-    if (!current_piece_.has_value()) return false;
+bool Game::try_rotate(bool clockwise) noexcept
+{
+    if (!current_piece_.has_value())
+        return false;
 
     auto& piece = *current_piece_;
     int fi = static_cast<int>(piece.rotation());
@@ -205,8 +234,10 @@ bool Game::try_rotate(bool clockwise) noexcept {
     return false;
 }
 
-void Game::hard_drop() noexcept {
-    if (!current_piece_.has_value()) return;
+void Game::hard_drop() noexcept
+{
+    if (!current_piece_.has_value())
+        return;
 
     uint32_t dropped = 0;
     while (try_move(Direction::Down)) {

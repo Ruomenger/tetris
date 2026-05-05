@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QMainWindow>
 #include <QLabel>
+#include <QMainWindow>
 #include <QTimer>
 
 #include "game.hpp"
 #include "game_widget.hpp"
 #include "preview_widget.hpp"
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
@@ -18,14 +19,12 @@ public:
 private:
     void setup_ui();
     void start_game();
-    void pause_game();
-    void game_over();
 
     tetris::Game game_;
-    GameWidget* game_widget_{nullptr};
-    PreviewWidget* preview_widget_{nullptr};
-    QLabel* score_label_{nullptr};
-    QLabel* level_label_{nullptr};
-    QLabel* lines_label_{nullptr};
-    QTimer* timer_{nullptr};
+    GameWidget* game_widget_{ nullptr };
+    PreviewWidget* preview_widget_{ nullptr };
+    QLabel* score_label_{ nullptr };
+    QLabel* level_label_{ nullptr };
+    QLabel* lines_label_{ nullptr };
+    QTimer* timer_{ nullptr };
 };

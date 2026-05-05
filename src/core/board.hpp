@@ -9,7 +9,8 @@
 
 namespace tetris {
 
-class Board {
+class Board
+{
 public:
     Board() = default;
 
@@ -28,8 +29,7 @@ public:
     [[nodiscard]] const auto& grid() const noexcept { return grid_; }
 
 private:
-    std::array<std::array<std::optional<TetrominoType>, kBoardWidth>, kBoardTotalHeight>
-        grid_{};
+    std::array<std::array<std::optional<TetrominoType>, kBoardWidth>, kBoardTotalHeight> grid_{};
 };
 
 }  // namespace tetris

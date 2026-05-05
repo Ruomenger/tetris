@@ -5,7 +5,8 @@
 
 namespace tetris {
 
-class Scoring {
+class Scoring
+{
 public:
     Scoring() noexcept = default;
 
@@ -24,10 +25,10 @@ private:
 
     void update_level() noexcept;
 
-    uint32_t score_{0};
-    uint32_t level_{1};
-    uint32_t total_lines_{0};
-    uint32_t lines_this_level_{0};
+    uint32_t score_{ 0 };
+    uint32_t level_{ 1 };
+    uint32_t total_lines_{ 0 };
+    uint32_t lines_this_level_{ 0 };
 };
 
 }  // namespace tetris

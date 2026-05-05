@@ -89,14 +89,14 @@
 - [x] 6.10 实现暂停/恢复/重新开始按钮 + 键盘快捷键
 - [x] 6.11 完整游戏可编译运行
 
-## 阶段 7：CI 与自动化 (本地脚本验证通过，待 GitHub 远程运行)
+## 阶段 7：CI 与自动化 ✅
 
 - [x] 7.1 配置 GitHub Actions CI 流水线（5 路并行: format/tidy/build+sanitizer/coverage）
 - [x] 7.2 本地验证格式化检查 (`scripts/format.sh --check`) 通过
-- [ ] 7.3 验证 Clang-Tidy 静态分析通过 (需 `cmake --preset debug` + `compile_commands.json`)
-- [ ] 7.4 验证 Debug/ASan 构建与测试在 CI 中通过 (需 GitHub Actions 远程运行)
-- [ ] 7.5 验证覆盖率报告生成与上传 (需 GitHub Actions + lcov/Codecov)
-- [ ] 7.6 添加 CI 状态徽章到 README.md (需 CI 首次运行后获取)
+- [x] 7.3 验证 Clang-Tidy 静态分析通过（clang-tidy-21，GitHub Actions 通过）
+- [x] 7.4 验证 Debug/ASan 构建与测试在 CI 中通过
+- [x] 7.5 验证覆盖率报告生成与上传（lcov + Codecov）
+- [x] 7.6 添加 CI 状态徽章到 README.md
 
 ## 阶段 8：文档与收尾 ✅
 

@@ -1,5 +1,8 @@
 # Tetris — C++23 / Qt 6.10 俄罗斯方块
 
+[![CI](https://github.com/Ruomenger/tetris/actions/workflows/ci.yml/badge.svg)](https://github.com/Ruomenger/tetris/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Ruomenger/tetris/branch/main/graph/badge.svg)](https://codecov.io/gh/Ruomenger/tetris)
+
 经典俄罗斯方块桌面游戏，使用 C++23 标准与 Qt 6.10 Widgets 模块构建。
 
 ## 特性

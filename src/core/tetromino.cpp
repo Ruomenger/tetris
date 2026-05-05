@@ -65,8 +65,7 @@ static constexpr std::array<ShapeMatrix, 7> kInitialShapes = { {
 
 namespace {
 
-consteval auto build_shape_table() -> std::array<ShapeMatrix, 28>
-{
+consteval auto build_shape_table() -> std::array<ShapeMatrix, 28> {
     std::array<ShapeMatrix, 28> table{};
     for (size_t t = 0; t < 7; ++t) {
         auto mat = kInitialShapes[t];
@@ -92,8 +91,7 @@ static constexpr auto kShapeTable = build_shape_table();
 
 namespace {
 
-constexpr size_t shape_idx(TetrominoType t, Rotation r) noexcept
-{
+constexpr size_t shape_idx(TetrominoType t, Rotation r) noexcept {
     return (static_cast<size_t>(t) * 4) + static_cast<size_t>(r);
 }
 
@@ -124,8 +122,7 @@ constexpr std::array<Kick5, 4> kICW = { {
 constexpr Kick5 kZero5{ { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
 
 // 取反
-constexpr Kick5 negate_kicks(const Kick5& k)
-{
+constexpr Kick5 negate_kicks(const Kick5& k) {
     return { { { static_cast<int8_t>(-k[0].row), static_cast<int8_t>(-k[0].col) },
                { static_cast<int8_t>(-k[1].row), static_cast<int8_t>(-k[1].col) },
                { static_cast<int8_t>(-k[2].row), static_cast<int8_t>(-k[2].col) },
@@ -134,8 +131,7 @@ constexpr Kick5 negate_kicks(const Kick5& k)
 }
 
 // CW 表 [type][from_rot] → 5 个偏移 (仅 CW 方向)
-const auto& cw_kick_table(TetrominoType type) noexcept
-{
+const auto& cw_kick_table(TetrominoType type) noexcept {
     if (type == TetrominoType::I)
         return kICW;
     if (type == TetrominoType::O) {
@@ -151,8 +147,7 @@ const auto& cw_kick_table(TetrominoType type) noexcept
 
 namespace {
 
-std::vector<Position> extract_cells(const ShapeMatrix& mat, Position origin) noexcept
-{
+std::vector<Position> extract_cells(const ShapeMatrix& mat, Position origin) noexcept {
     std::vector<Position> cells;
     cells.reserve(4);
     for (int8_t y = 0; y < 4; ++y) {
@@ -170,41 +165,34 @@ std::vector<Position> extract_cells(const ShapeMatrix& mat, Position origin) noe
 
 // ── 公共接口 ───────────────────────────────────────────
 
-Tetromino::Tetromino(TetrominoType type) noexcept : type_(type)
-{
+Tetromino::Tetromino(TetrominoType type) noexcept : type_(type) {
     update_cells();
 }
 
-ShapeSpan Tetromino::shape() const noexcept
-{
+ShapeSpan Tetromino::shape() const noexcept {
     return std::span{ kShapeTable[shape_idx(type_, rotation_)] };
 }
 
-void Tetromino::set_position(Position pos) noexcept
-{
+void Tetromino::set_position(Position pos) noexcept {
     pos_ = pos;
     update_cells();
 }
 
-void Tetromino::rotate_clockwise() noexcept
-{
+void Tetromino::rotate_clockwise() noexcept {
     rotation_ = static_cast<Rotation>((static_cast<int>(rotation_) + 1) % 4);
     update_cells();
 }
 
-void Tetromino::rotate_counter_clockwise() noexcept
-{
+void Tetromino::rotate_counter_clockwise() noexcept {
     rotation_ = static_cast<Rotation>((static_cast<int>(rotation_) + 3) % 4);
     update_cells();
 }
 
-void Tetromino::update_cells() noexcept
-{
+void Tetromino::update_cells() noexcept {
     cells_ = extract_cells(kShapeTable[shape_idx(type_, rotation_)], pos_);
 }
 
-std::span<const Position> Tetromino::wall_kick_offsets(Rotation from, Rotation to) const noexcept
-{
+std::span<const Position> Tetromino::wall_kick_offsets(Rotation from, Rotation to) const noexcept {
     if (type_ == TetrominoType::O)
         return { kZero5 };
 
@@ -233,8 +221,7 @@ std::span<const Position> Tetromino::wall_kick_offsets(Rotation from, Rotation t
     return { kZero5 };
 }
 
-std::vector<Position> Tetromino::moved_cells(Direction dir) const noexcept
-{
+std::vector<Position> Tetromino::moved_cells(Direction dir) const noexcept {
     int8_t dr = 0;
     int8_t dc = 0;
     switch (dir) {
@@ -253,24 +240,21 @@ std::vector<Position> Tetromino::moved_cells(Direction dir) const noexcept
     return extract_cells(kShapeTable[shape_idx(type_, rotation_)], new_pos);
 }
 
-std::vector<Position> Tetromino::rotated_cells(bool clockwise) const noexcept
-{
+std::vector<Position> Tetromino::rotated_cells(bool clockwise) const noexcept {
     const int fi = static_cast<int>(rotation_);
     const int ti = clockwise ? (fi + 1) % 4 : (fi + 3) % 4;
     const auto new_rot = static_cast<Rotation>(ti);
     return extract_cells(kShapeTable[shape_idx(type_, new_rot)], pos_);
 }
 
-std::vector<Position> Tetromino::kicked_cells(Rotation rot, Position kick) const noexcept
-{
+std::vector<Position> Tetromino::kicked_cells(Rotation rot, Position kick) const noexcept {
     const Position new_pos{ static_cast<int8_t>(pos_.row + kick.row),
                             static_cast<int8_t>(pos_.col + kick.col) };
     return extract_cells(kShapeTable[shape_idx(type_, rot)], new_pos);
 }
 
 std::vector<Position> Tetromino::cells_for(TetrominoType type, Rotation rot,
-                                           Position origin) noexcept
-{
+                                           Position origin) noexcept {
     return extract_cells(kShapeTable[shape_idx(type, rot)], origin);
 }
 

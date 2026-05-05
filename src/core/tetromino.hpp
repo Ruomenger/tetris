@@ -11,8 +11,7 @@ namespace tetris {
 using ShapeMatrix = std::array<std::array<bool, 4>, 4>;
 using ShapeSpan = std::span<const std::array<bool, 4>, 4>;
 
-class Tetromino
-{
+class Tetromino {
 public:
     explicit Tetromino(TetrominoType type) noexcept;
 

@@ -4,16 +4,14 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
-{
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("Tetris");
     setFixedSize(520, 680);
     setup_ui();
     start_game();
 }
 
-void MainWindow::setup_ui()
-{
+void MainWindow::setup_ui() {
     auto* central = new QWidget(this);
     setCentralWidget(central);
 
@@ -115,8 +113,7 @@ void MainWindow::setup_ui()
     });
 }
 
-void MainWindow::start_game()
-{
+void MainWindow::start_game() {
     std::ignore = game_.process(tetris::GameAction::Restart);
     timer_->start(game_.drop_interval());
     game_widget_->update();

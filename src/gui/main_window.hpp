@@ -8,8 +8,7 @@
 #include "game_widget.hpp"
 #include "preview_widget.hpp"
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:

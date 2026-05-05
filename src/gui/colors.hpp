@@ -6,8 +6,7 @@
 
 #include "types.hpp"
 
-inline QColor piece_color(tetris::TetrominoType type)
-{
+inline QColor piece_color(tetris::TetrominoType type) {
     switch (type) {
         case tetris::TetrominoType::I:
             return { 0, 240, 240 };  // 青色
@@ -27,8 +26,7 @@ inline QColor piece_color(tetris::TetrominoType type)
     return { 128, 128, 128 };
 }
 
-inline QColor ghost_color(tetris::TetrominoType type)
-{
+inline QColor ghost_color(tetris::TetrominoType type) {
     auto c = piece_color(type);
     return QColor(c.red(), c.green(), c.blue(), 60);
 }

@@ -5,8 +5,7 @@
 
 namespace tetris {
 
-class Scoring
-{
+class Scoring {
 public:
     Scoring() noexcept = default;
 

@@ -4,8 +4,7 @@
 
 #include "game.hpp"
 
-class PreviewWidget : public QWidget
-{
+class PreviewWidget : public QWidget {
     Q_OBJECT
 
 public:

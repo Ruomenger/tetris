@@ -9,8 +9,7 @@ Game::Game() = default;
 
 // ── 公开接口 ────────────────────────────────────────────
 
-std::expected<void, GameError> Game::process(GameAction action)
-{
+std::expected<void, GameError> Game::process(GameAction action) {
     // 全局操作：任何时候都可以
     if (action == GameAction::Restart) {
         start_game();
@@ -70,8 +69,7 @@ std::expected<void, GameError> Game::process(GameAction action)
     return {};
 }
 
-std::expected<void, GameError> Game::tick()
-{
+std::expected<void, GameError> Game::tick() {
     if (state_ != GameState::Playing)
         return {};
 
@@ -87,8 +85,7 @@ std::expected<void, GameError> Game::tick()
     return {};
 }
 
-std::vector<Position> Game::ghost_position() const noexcept
-{
+std::vector<Position> Game::ghost_position() const noexcept {
     if (!current_piece_.has_value())
         return {};
 
@@ -106,27 +103,23 @@ std::vector<Position> Game::ghost_position() const noexcept
     return std::vector<Position>(ghost.cells().begin(), ghost.cells().end());
 }
 
-std::chrono::milliseconds Game::drop_interval() const noexcept
-{
+std::chrono::milliseconds Game::drop_interval() const noexcept {
     const int32_t ms = std::max(50, 800 - ((static_cast<int32_t>(scoring_.level()) - 1) * 60));
     return std::chrono::milliseconds(ms);
 }
 
-void Game::set_rng_seed(uint32_t seed) noexcept
-{
+void Game::set_rng_seed(uint32_t seed) noexcept {
     rng_.seed(seed);
 }
 
-void Game::set_piece_sequence(std::vector<TetrominoType> seq) noexcept
-{
+void Game::set_piece_sequence(std::vector<TetrominoType> seq) noexcept {
     fixed_sequence_ = std::move(seq);
     sequence_index_ = 0;
 }
 
 // ── 私有方法 ────────────────────────────────────────────
 
-void Game::start_game() noexcept
-{
+void Game::start_game() noexcept {
     board_.reset();
     scoring_.reset();
     current_piece_.reset();
@@ -136,8 +129,7 @@ void Game::start_game() noexcept
     spawn_piece();
 }
 
-void Game::spawn_piece()
-{
+void Game::spawn_piece() {
     if (!next_type_.has_value()) {
         next_type_ = random_type();
     }
@@ -152,8 +144,7 @@ void Game::spawn_piece()
     }
 }
 
-void Game::lock_piece()
-{
+void Game::lock_piece() {
     if (!current_piece_.has_value())
         return;
 
@@ -169,8 +160,7 @@ void Game::lock_piece()
     spawn_piece();
 }
 
-TetrominoType Game::random_type()
-{
+TetrominoType Game::random_type() {
     if (fixed_sequence_.has_value() && !fixed_sequence_->empty()) {
         auto t = (*fixed_sequence_)[sequence_index_ % fixed_sequence_->size()];
         sequence_index_ = (sequence_index_ + 1) % fixed_sequence_->size();
@@ -180,8 +170,7 @@ TetrominoType Game::random_type()
     return static_cast<TetrominoType>(dist(rng_));
 }
 
-bool Game::try_move(Direction dir) noexcept
-{
+bool Game::try_move(Direction dir) noexcept {
     if (!current_piece_.has_value())
         return false;
     auto new_cells = current_piece_->moved_cells(dir);
@@ -204,8 +193,7 @@ bool Game::try_move(Direction dir) noexcept
     return false;
 }
 
-bool Game::try_rotate(bool clockwise) noexcept
-{
+bool Game::try_rotate(bool clockwise) noexcept {
     if (!current_piece_.has_value()) {
         return false;
     }
@@ -235,8 +223,7 @@ bool Game::try_rotate(bool clockwise) noexcept
     return false;
 }
 
-void Game::hard_drop()
-{
+void Game::hard_drop() {
     if (!current_piece_.has_value())
         return;
 

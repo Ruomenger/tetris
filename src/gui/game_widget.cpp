@@ -7,19 +7,16 @@
 
 #include "colors.hpp"
 
-GameWidget::GameWidget(tetris::Game& game, QWidget* parent) : QWidget(parent), game_(game)
-{
+GameWidget::GameWidget(tetris::Game& game, QWidget* parent) : QWidget(parent), game_(game) {
     setFocusPolicy(Qt::StrongFocus);
     setFixedSize(kCellSize * tetris::kBoardWidth, kCellSize * tetris::kBoardVisibleHeight);
 }
 
-QSize GameWidget::sizeHint() const
-{
+QSize GameWidget::sizeHint() const {
     return { kCellSize * tetris::kBoardWidth, kCellSize * tetris::kBoardVisibleHeight };
 }
 
-void GameWidget::paintEvent(QPaintEvent* /*event*/)
-{
+void GameWidget::paintEvent(QPaintEvent* /*event*/) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -45,8 +42,7 @@ void GameWidget::paintEvent(QPaintEvent* /*event*/)
     }
 }
 
-void GameWidget::keyPressEvent(QKeyEvent* event)
-{
+void GameWidget::keyPressEvent(QKeyEvent* event) {
     using tetris::GameAction;
 
     if (event->isAutoRepeat())
@@ -84,8 +80,7 @@ void GameWidget::keyPressEvent(QKeyEvent* event)
     update();
 }
 
-void GameWidget::draw_grid(QPainter& painter)
-{
+void GameWidget::draw_grid(QPainter& painter) {
     painter.setPen(QPen(QColor(50, 50, 50), 1));
     for (int x = 0; x <= tetris::kBoardWidth; ++x) {
         painter.drawLine(x * kCellSize, 0, x * kCellSize, height());
@@ -95,8 +90,7 @@ void GameWidget::draw_grid(QPainter& painter)
     }
 }
 
-void GameWidget::draw_locked_cells(QPainter& painter)
-{
+void GameWidget::draw_locked_cells(QPainter& painter) {
     const auto& board = game_.board();
     for (int8_t row = 0; row < tetris::kBoardVisibleHeight; ++row) {
         for (int8_t col = 0; col < tetris::kBoardWidth; ++col) {
@@ -109,8 +103,7 @@ void GameWidget::draw_locked_cells(QPainter& painter)
     }
 }
 
-void GameWidget::draw_current_piece(QPainter& painter)
-{
+void GameWidget::draw_current_piece(QPainter& painter) {
     const auto& piece = game_.current_piece();
     if (!piece.has_value())
         return;
@@ -124,8 +117,7 @@ void GameWidget::draw_current_piece(QPainter& painter)
     }
 }
 
-void GameWidget::draw_ghost_piece(QPainter& painter)
-{
+void GameWidget::draw_ghost_piece(QPainter& painter) {
     const auto& piece = game_.current_piece();
     if (!piece.has_value())
         return;
@@ -143,8 +135,7 @@ void GameWidget::draw_ghost_piece(QPainter& painter)
     }
 }
 
-void GameWidget::draw_cell(QPainter& painter, int8_t row, int8_t col, const QColor& color)
-{
+void GameWidget::draw_cell(QPainter& painter, int8_t row, int8_t col, const QColor& color) {
     int x = col * kCellSize;
     int y = row * kCellSize;
     int pad = 1;

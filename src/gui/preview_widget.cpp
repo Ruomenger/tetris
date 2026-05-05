@@ -4,18 +4,15 @@
 
 #include "colors.hpp"
 
-PreviewWidget::PreviewWidget(tetris::Game& game, QWidget* parent) : QWidget(parent), game_(game)
-{
+PreviewWidget::PreviewWidget(tetris::Game& game, QWidget* parent) : QWidget(parent), game_(game) {
     setFixedSize(kBoardPixel, kBoardPixel + 20);
 }
 
-QSize PreviewWidget::sizeHint() const
-{
+QSize PreviewWidget::sizeHint() const {
     return { kBoardPixel, kBoardPixel + 20 };
 }
 
-void PreviewWidget::paintEvent(QPaintEvent* /*event*/)
-{
+void PreviewWidget::paintEvent(QPaintEvent* /*event*/) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), QColor(40, 40, 40));

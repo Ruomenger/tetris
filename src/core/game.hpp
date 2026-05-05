@@ -13,16 +13,14 @@
 
 namespace tetris {
 
-class Game
-{
+class Game {
 public:
     Game();
 
     [[nodiscard]] constexpr GameState state() const noexcept { return state_; }
     [[nodiscard]] constexpr uint32_t score() const noexcept { return scoring_.score(); }
     [[nodiscard]] constexpr uint32_t level() const noexcept { return scoring_.level(); }
-    [[nodiscard]] constexpr uint32_t lines_cleared() const noexcept
-    {
+    [[nodiscard]] constexpr uint32_t lines_cleared() const noexcept {
         return scoring_.total_lines();
     }
 
@@ -30,8 +28,7 @@ public:
     [[nodiscard]] std::expected<void, GameError> tick();
 
     [[nodiscard]] const Board& board() const noexcept { return board_; }
-    [[nodiscard]] const std::optional<Tetromino>& current_piece() const noexcept
-    {
+    [[nodiscard]] const std::optional<Tetromino>& current_piece() const noexcept {
         return current_piece_;
     }
     [[nodiscard]] std::optional<TetrominoType> next_piece() const noexcept { return next_type_; }

@@ -9,8 +9,7 @@
 
 namespace tetris {
 
-class Board
-{
+class Board {
 public:
     Board() = default;
 

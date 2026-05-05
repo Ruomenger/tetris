@@ -54,7 +54,7 @@ jobs:
           sudo apt-get install -y \
             cmake ninja-build clang-21 clang-tidy-21 clang-format-21 \
             qt6-base-dev libgtest-dev
-          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-21 100
+          # format job 使用 update-alternatives，tidy.sh 通过 CI=true 直接调用 clang-tidy-21
           sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-21 100
       - name: Configure
         run: cmake --preset ci-debug

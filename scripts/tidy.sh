@@ -64,9 +64,17 @@ elif [ "${1:-}" == "--check" ]; then
 fi
 
 NPROC=$(nproc 2>/dev/null || echo 4)
-echo "[tidy] 目录: ${BUILD_DIR}, ${NPROC} 并行, 过滤器: ${FILE_FILTER}"
+
+# CI 环境使用版本号二进制，本地使用系统默认
+if [ "${CI:-}" == "true" ]; then
+    TIDY_BIN="clang-tidy-21"
+else
+    TIDY_BIN="clang-tidy"
+fi
+echo "[tidy] 目录: ${BUILD_DIR}, ${NPROC} 并行, 二进制: ${TIDY_BIN}, 过滤器: ${FILE_FILTER}"
 
 if ! run-clang-tidy \
+    -clang-tidy-binary "$TIDY_BIN" \
     -p "$BUILD_DIR" \
     -header-filter='.*src/core/.*' \
     -j "$NPROC" \

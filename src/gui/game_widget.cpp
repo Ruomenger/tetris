@@ -116,8 +116,8 @@ void GameWidget::draw_current_piece(QPainter& painter)
         return;
 
     auto color = piece_color(piece->type());
-    for (auto& p : piece->cells()) {
-        int8_t visible_row = static_cast<int8_t>(p.row - tetris::kBoardBufferHeight);
+    for (const auto& p : piece->cells()) {
+        const auto visible_row = static_cast<int8_t>(p.row - tetris::kBoardBufferHeight);
         if (visible_row >= 0 && visible_row < tetris::kBoardVisibleHeight) {
             draw_cell(painter, visible_row, p.col, color);
         }
@@ -135,8 +135,8 @@ void GameWidget::draw_ghost_piece(QPainter& painter)
         return;
 
     auto color = ghost_color(piece->type());
-    for (auto& p : ghost) {
-        int8_t visible_row = static_cast<int8_t>(p.row - tetris::kBoardBufferHeight);
+    for (const auto& p : ghost) {
+        const auto visible_row = static_cast<int8_t>(p.row - tetris::kBoardBufferHeight);
         if (visible_row >= 0 && visible_row < tetris::kBoardVisibleHeight) {
             draw_cell(painter, visible_row, p.col, color);
         }

@@ -23,6 +23,7 @@ protected:
         auto r = game_.process(GameAction::Restart);
         ASSERT_TRUE(r.has_value());
         ASSERT_EQ(game_.state(), GameState::Playing);
+        ASSERT_TRUE(game_.current_piece().has_value());
     }
 };
 
@@ -225,10 +226,10 @@ TEST_F(GameTest, GhostBelowOrAtCurrent)
     auto cells = game_.current_piece()->cells();
 
     int ghost_max_row = 0;
-    for (auto& p : ghost)
+    for (const auto& p : ghost)
         ghost_max_row = std::max(ghost_max_row, static_cast<int>(p.row));
     int cells_max_row = 0;
-    for (auto& p : cells)
+    for (const auto& p : cells)
         cells_max_row = std::max(cells_max_row, static_cast<int>(p.row));
     EXPECT_GE(ghost_max_row, cells_max_row);
 }

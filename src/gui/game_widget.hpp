@@ -23,7 +23,7 @@ private:
     void draw_locked_cells(QPainter& painter);
     void draw_current_piece(QPainter& painter);
     void draw_ghost_piece(QPainter& painter);
-    void draw_cell(QPainter& painter, int8_t row, int8_t col, const QColor& color);
+    static void draw_cell(QPainter& painter, int8_t row, int8_t col, const QColor& color);
 
     tetris::Game& game_;
 };

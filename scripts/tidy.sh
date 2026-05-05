@@ -55,7 +55,7 @@ if [ ! -f "${BUILD_DIR}/compile_commands.json" ]; then
 fi
 
 FIX_FLAG=""
-FILE_FILTER=".*\.(cpp|hpp)$"
+FILE_FILTER="^(?!.*/build/).*\.(cpp|hpp)$"
 
 if [ "${1:-}" == "--fix" ]; then
     FIX_FLAG="-fix"

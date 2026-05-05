@@ -30,7 +30,7 @@ void MainWindow::setup_ui()
     preview_widget_ = new PreviewWidget(game_, this);
     side_panel->addWidget(preview_widget_);
 
-    auto title = new QLabel("TETRIS", this);
+    auto* title = new QLabel("TETRIS", this);
     title->setFont(QFont("monospace", 16, QFont::Bold));
     title->setAlignment(Qt::AlignCenter);
     side_panel->addWidget(title);

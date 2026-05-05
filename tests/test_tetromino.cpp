@@ -166,7 +166,7 @@ TEST_F(TetrominoTest, OWallKicksAllZero)
     for (auto from : { Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270 }) {
         for (auto to : { Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270 }) {
             auto kicks = o.wall_kick_offsets(from, to);
-            for (auto& k : kicks) {
+            for (const auto& k : kicks) {
                 EXPECT_EQ(k.row, 0);
                 EXPECT_EQ(k.col, 0);
             }
